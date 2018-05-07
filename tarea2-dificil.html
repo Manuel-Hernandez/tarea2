@@ -1,0 +1,107 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-card/paper-card.html">
+<link rel="import" href="../iron-collapse/iron-collapse.html">
+
+
+<dom-module id="tarea2-dificil">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    
+    <paper-button on-click="MostartDatos">CONSULTA DE DEPARTAMENTOS</paper-button>
+    
+    <iron-ajax
+        id="mostrar"
+        url="http://demo6292426.mockable.io/c-properties"
+        handle-as="json"
+        on-response="handleResponse"
+        debounce-duration="300">
+    </iron-ajax>
+
+
+    <template is="dom-repeat" items="[[propiedades]]">
+       
+      <template is="dom-if" if="{{validarprecio(item.precio)}}" if="{{validarRent(item.rent)}}"> 
+      
+       <paper-card heading="Departamento en Calle [[item.nombre]]" style="width: 100%">
+           <div class="card-content">
+                <paper-input label="Precio de venta:" value="[[item.precio]]"></paper-input>
+           </div>
+
+           <div class="card-actions">
+           <paper-button id="button{{index}}" on-click="toggle">VER DETALLES DEL DEPARTAMENTO</paper-button>
+              <iron-collapse id="collapse{{index}}">
+                 <p>Precio de Renta: [[item.rent]]</p>
+                 <div><p>[[item.descripcion]]</p></div>
+               </iron-collapse> 
+           </div>
+
+
+        </paper-card>
+       </template>
+    </template>
+    
+  </template>
+
+  <script>
+    /**
+     * `tarea2-dificil`
+     * consumiento api rest con validaciones
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class Tarea2Dificil extends Polymer.Element {
+      static get is() { return 'tarea2-dificil'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'tarea2-dificil'
+          }
+          
+        };
+      }
+
+      MostartDatos(){
+      this.$.mostrar.generateRequest();
+      }
+      handleResponse(evento){
+           console.log(evento.detail.response); /*request*/
+           this.set('propiedades',evento.detail.response.Propiedades);
+      }
+      validarprecio(precio){
+        return precio !== undefined;
+      }
+      validarRent(rent){
+        return rent !== undefined;
+      }
+      
+      toggle(e) {
+          var button = e.target;
+          var id = button.getAttribute("id");
+            
+          var collapse = id.replace("button", "collapse");
+          //id="button0" =>> "collapse0"
+          //console.log(collapse);
+          /*console.log(typeof(collap));
+          var collapse = parseInt(collap);
+          console.log(typeof(collapse));
+                 console.log(collapse);*/
+          this.shadowRoot.querySelector("#"+collapse).toggle();   
+         //this.$.collapse.toggle();
+
+      }
+     
+    }
+
+    window.customElements.define(Tarea2Dificil.is, Tarea2Dificil);
+  </script>
+</dom-module>
